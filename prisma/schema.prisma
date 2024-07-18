@@ -1,0 +1,51 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Position {
+  idPosition String    @id @default(uuid()) @db.Char(36)
+  name       String    @db.VarChar(255)
+  Candidate  Candidate[]
+}
+
+model Party {
+  idParty    String    @id @default(uuid()) @db.Char(36)
+  name       String    @db.VarChar(255)
+  Candidate  Candidate[]
+}
+
+model City {
+  idCity     String    @id @default(uuid()) @db.Char(36)
+  name       String    @db.VarChar(255)
+  Candidate  Candidate[]
+}
+
+model Candidate {
+  idCandidate String   @id @default(uuid()) @db.Char(36)
+  name        String   @db.VarChar(255)
+  description String   @db.VarChar(255)
+  image       String   @db.Text
+  idPosition  String
+  idParty     String
+  idCity      String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  Position    Position  @relation(fields: [idPosition], references: [idPosition])
+  Party       Party     @relation(fields: [idParty], references: [idParty])
+  City        City      @relation(fields: [idCity], references: [idCity])
+  Vote        Vote[]
+}
+
+model Vote {
+  email       String    @db.VarChar(255)
+  idCandidate String
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  Candidate   Candidate @relation(fields: [idCandidate], references: [idCandidate])
+  @@id([email, idCandidate])
+}
