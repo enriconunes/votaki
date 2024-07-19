@@ -1,29 +1,26 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "../../../../../lib/db";
-// import { getServerSession } from "next-auth/next";
 
-// route to return the candidate datails using idCandidate param
 export async function GET(req: NextRequest, { params }: { params: { idCandidate: string } }) {
+    const { idCandidate } = params;
 
-    const idCandidate = params.idCandidate
-
-    // const session = await getServerSession();
-
-    // if (!session) {
-    //     return NextResponse.json({ message: "Unauthorized", status: 401 });
-    // }
+    if (!idCandidate) {
+        return NextResponse.json({ message: "Missing idCandidate parameter", status: 400 });
+    }
 
     try {
         const candidate = await prisma.candidate.findUnique({
             where: {
-                idCandidate
-            }
-        })
+                idCandidate: idCandidate,
+            },
+        });
+
+        if (!candidate) {
+            return NextResponse.json({ message: "Candidate not found", status: 404 });
+        }
 
         return NextResponse.json({ candidate, status: 200 });
-
     } catch (err) {
-
         console.error("ERRO: ", err);
         return NextResponse.json({ message: `Error: ${err}`, status: 500 });
     }
