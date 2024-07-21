@@ -74,7 +74,7 @@ export default function AdminPage() {
       setCities(citiesResponse.data.cities);
       setPositions(positionsResponse.data.positions);
     } catch (error) {
-      toast.error("Erro ao buscar dados");
+      toast.error("Erro ao buscar dados: " + error);
     } finally {
       setIsLoading(false);
       console.log(positions)
