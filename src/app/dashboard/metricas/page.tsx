@@ -151,7 +151,7 @@ export default function MetricsPage() {
         <div className="mb-4">
           <label htmlFor="city" className="block text-white mb-2">Cidade:</label>
           <select id="city" value={selectedCity} onChange={handleCityChange} className="w-full px-4 py-2 border rounded-lg text-gray-700 focus:outline-none focus:border-blue-500">
-            {cities.map(city => (
+            {cities?.map(city => (
               <option key={city.idCity} value={city.idCity}>{city.name}</option>
             ))}
           </select>
@@ -159,7 +159,7 @@ export default function MetricsPage() {
         <div className="mb-4">
           <label htmlFor="position" className="block text-white mb-2">Posição:</label>
           <select id="position" value={selectedPosition} onChange={handlePositionChange} className="w-full px-4 py-2 border rounded-lg text-gray-700 focus:outline-none focus:border-blue-500">
-            {positions.map(position => (
+            {positions?.map(position => (
               <option key={position.idPosition} value={position.idPosition}>{position.name}</option>
             ))}
           </select>
@@ -174,7 +174,7 @@ export default function MetricsPage() {
           </div>
         </div>
         <div className="w-full space-y-4">
-          {candidates.map(candidate => (
+          {candidates?.map(candidate => (
             <div key={candidate.idCandidate} className="bg-gray-100 p-4 rounded shadow">
               <div className="flex items-center space-x-4">
                 <img src={candidate.image} alt={candidate.name} className="w-16 h-16 object-cover rounded-full" />
