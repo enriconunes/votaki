@@ -1,3 +1,4 @@
+// pages/admin.tsx
 'use client';
 
 import { toast } from "react-toastify";
@@ -10,6 +11,8 @@ import api from "@/services/axiosConfig";
 import { FaEdit } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
 import ReturnBtn from "@/components/Buttons/ReturnBtn";
+import CandidateForm from "@/components/Forms/CandidateForm";
+import CityForm from "@/components/Forms/CityForm";
 
 type City = {
   idCity: string;
@@ -106,101 +109,12 @@ export default function AdminPage() {
             Visualizar métricas
         </button>
 
-        <div className="py-8 px-4 md:px-8 bg-white border-2 border-gray-200 rounded-lg shadow-2xl">
-          <div className="w-full" id="accordion-collapse" data-accordion="collapse">
-            <div className="mb-4">
-              <button
-                type="button"
-                className="w-full p-5 font-medium text-gray-500 border border-b-0 border-gray-200 hover:bg-gray-100 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-800"
-                onClick={() => toggleCollapse("new-candidate")}
-              >
-                Cadastrar novo candidato
-              </button>
-              <div className={`${activeCollapse === "new-candidate" ? 'block' : 'hidden'} p-5 border border-b-0 border-gray-200 dark:border-gray-700 dark:bg-gray-900`}>
-                <form>
-                  <div className="mb-4">
-                    <label htmlFor="name" className="block text-gray-700">Nome:</label>
-                    <input type="text" id="name" name="name" className="w-full px-4 py-2 border rounded-lg text-gray-700 focus:outline-none focus:border-blue-500" />
-                  </div>
-                  <div className="mb-4">
-                    <label htmlFor="description" className="block text-gray-700">Descrição:</label>
-                    <textarea id="description" name="description" className="w-full px-4 py-2 border rounded-lg text-gray-700 focus:outline-none focus:border-blue-500" />
-                  </div>
-                  <div className="mb-4">
-                    <label htmlFor="position" className="block text-gray-700">Posição:</label>
-                    <select id="position" name="position" className="w-full px-4 py-2 border rounded-lg text-gray-700 focus:outline-none focus:border-blue-500">
-                      {positions?.map(position => (
-                        <option key={position.idPosition} value={position.idPosition}>{position.name}</option>
-                      ))}
-                    </select>
-                  </div>
-                  <div className="mb-4">
-                    <label htmlFor="party" className="block text-gray-700">Partido:</label>
-                    <select id="party" name="party" className="w-full px-4 py-2 border rounded-lg text-gray-700 focus:outline-none focus:border-blue-500">
-                      {parties?.map(party => (
-                        <option key={party.idParty} value={party.idParty}>{party.name}</option>
-                      ))}
-                    </select>
-                  </div>
-                  <div className="mb-4">
-                    <label htmlFor="city" className="block text-gray-700">Cidade:</label>
-                    <select id="city" name="city" className="w-full px-4 py-2 border rounded-lg text-gray-700 focus:outline-none focus:border-blue-500">
-                      {cities?.map(city => (
-                        <option key={city.idCity} value={city.idCity}>{city.name}</option>
-                      ))}
-                    </select>
-                  </div>
-                  <div className="text-right">
-                    <button type="submit" className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-800 w-full">Cadastrar</button>
-                  </div>
-                </form>
-              </div>
-            </div>
+        <div className="py-8 px-4 md:px-8 mb-4 bg-white border-2 border-gray-200 rounded-lg shadow-2xl">
+          <CandidateForm candidates={candidates} cities={cities} parties={parties} positions={positions} />
+        </div>
 
-            <h2 className="text-lg font-semibold mb-4">Candidatos</h2>
-            {candidates.map(candidate => (
-              <div key={candidate.idCandidate}>
-                <button
-                  type="button"
-                  className="flex items-center justify-between w-full p-5 font-medium text-gray-500 border border-b-0 border-gray-200 hover:bg-gray-100 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-800 gap-3"
-                  onClick={() => toggleCollapse(candidate.idCandidate)}
-                >
-                  <div className="flex items-center gap-3">
-                    <img src={candidate.image} alt={candidate.name} className="w-12 h-12 object-cover rounded-full" />
-                    <span>{candidate.name}</span>
-                  </div>
-                  <svg
-                    className={`w-3 h-3 ${activeCollapse === candidate.idCandidate ? 'rotate-180' : ''}`}
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 10 6"
-                  >
-                    <path
-                      stroke="currentColor"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M9 5L5 1 1 5"
-                    />
-                  </svg>
-                </button>
-                <div
-                  className={`${activeCollapse === candidate.idCandidate ? 'block' : 'hidden'} p-5 border border-b-0 border-gray-200 dark:border-gray-700 dark:bg-gray-900`}
-                >
-                  <p className="mb-2 text-gray-500 dark:text-gray-400"><strong>Descrição:</strong> {candidate.description}</p>
-                  <p className="mb-2 text-gray-500 dark:text-gray-400"><strong>Posição:</strong> {candidate.Position.name}</p>
-                  <p className="mb-2 text-gray-500 dark:text-gray-400"><strong>Partido:</strong> {candidate.Party.name}</p>
-                  <p className="mb-2 text-gray-500 dark:text-gray-400"><strong>Cidade:</strong> {candidate.City.name}</p>
-                  <p className="mb-2 text-gray-500 dark:text-gray-400"><strong>Criado em:</strong> {new Date(candidate.createdAt).toLocaleString()}</p>
-                  <p className="mb-2 text-gray-500 dark:text-gray-400"><strong>Atualizado em:</strong> {new Date(candidate.updatedAt).toLocaleString()}</p>
-                  <div className="flex justify-end gap-2">
-                    <FaEdit size={24} className="text-yellow-500 hover:text-yellow-700 cursor-pointer" />
-                    <MdDelete size={24} className="text-red-500 hover:text-red-700 cursor-pointer" />
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
+        <div className="py-8 px-4 md:px-8 bg-white border-2 border-gray-200 rounded-lg shadow-2xl">
+          <CityForm cities={cities} />
         </div>
       </div>
     </div>

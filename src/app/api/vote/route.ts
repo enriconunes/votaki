@@ -17,6 +17,10 @@ type CandidateWithVoteCount = {
         idPosition: string;
         name: string;
     };
+    City: {
+        idCity: string;
+        name: string;
+    };
     voteCount: number;
 };
 
@@ -41,6 +45,7 @@ export async function GET(req: NextRequest) {
             },
             include: {
                 Position: true,
+                City: true,
                 _count: {
                     select: {
                         Vote: true,
