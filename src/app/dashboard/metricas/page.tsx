@@ -1,8 +1,8 @@
-'use client';
+"use client"
 
 import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
-import { useRouter, useParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 import LogoutBtn from "@/components/Buttons/LogoutBtn";
 import LoadScreen from "@/components/LoadScreen";
@@ -15,11 +15,6 @@ ChartJS.register(ArcElement, Tooltip, Legend);
 
 type City = {
   idCity: string;
-  name: string;
-}
-
-type Party = {
-  idParty: string;
   name: string;
 }
 
@@ -49,24 +44,27 @@ type ApiResponse = {
 export default function MetricsPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
-  const { idCity } = useParams();
 
   const [candidates, setCandidates] = useState<CandidateProps[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [totalVotes, setTotalVotes] = useState(0);
+  const [cities, setCities] = useState<City[]>([]);
+  const [positions, setPositions] = useState<Position[]>([]);
+  const [selectedCity, setSelectedCity] = useState<string>("be15e03e-67ea-4124-b318-370ccb1d795a");
+  const [selectedPosition, setSelectedPosition] = useState<string>("4b1551c8-4913-446e-a916-d2ebc55d2b97");
 
   useEffect(() => {
     if (status === 'unauthenticated' || (session && session.user.role !== 'admin')) {
       router.push('/');
     } else if (status === 'authenticated') {
       fetchData();
+      fetchFilters();
     }
-  }, [session, status, router]);
+  }, [session, status, router, selectedCity, selectedPosition]);
 
   async function fetchData() {
     try {
-      // Endpoint fictício para a apresentação
-      const response = await api.get<ApiResponse>(`/api/vote/${idCity}`);
+      const response = await api.get<ApiResponse>(`/api/vote?idCity=${selectedCity}&idPosition=${selectedPosition}`);
       const candidatesWithVoteCount = response.data.candidatesWithVoteCount;
 
       const totalVotes = candidatesWithVoteCount.reduce((sum: number, candidate: CandidateProps) => sum + candidate.voteCount, 0);
@@ -79,6 +77,32 @@ export default function MetricsPage() {
       setIsLoading(false);
     }
   }
+
+  async function fetchFilters() {
+    try {
+      const [citiesResponse, positionsResponse] = await Promise.all([
+        api.get('/api/city'),
+        api.get('/api/position')
+      ]);
+
+      setCities(citiesResponse.data.cities);
+      setPositions(positionsResponse.data.positions);
+    } catch (error) {
+      toast.error("Erro ao buscar dados dos filtros");
+    }
+  }
+
+  const handleCityChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedCity(e.target.value);
+  };
+
+  const handlePositionChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedPosition(e.target.value);
+  };
+
+  const handleSearch = () => {
+    fetchData();
+  };
 
   if (status === 'loading' || isLoading) {
     return <LoadScreen />;
@@ -119,7 +143,24 @@ export default function MetricsPage() {
       <div className="p-4 w-full sm:max-w-2xl">
         <h1 className="text-center text-xl font-bold mb-4 text-white">Métricas em Vitória da Conquista</h1>
         <h2 className="text-center text-xl font-semibold mb-4 text-white">Total de votos: {totalVotes}</h2>
-        <div className="w-full flex justify-center mb-6 bg-gray-100 py-3 rounded-md">
+        <div className="mb-4">
+          <label htmlFor="city" className="block text-white mb-2">Cidade:</label>
+          <select id="city" value={selectedCity} onChange={handleCityChange} className="w-full px-4 py-2 border rounded-lg text-gray-700 focus:outline-none focus:border-blue-500">
+            {cities.map(city => (
+              <option key={city.idCity} value={city.idCity}>{city.name}</option>
+            ))}
+          </select>
+        </div>
+        <div className="mb-4">
+          <label htmlFor="position" className="block text-white mb-2">Posição:</label>
+          <select id="position" value={selectedPosition} onChange={handlePositionChange} className="w-full px-4 py-2 border rounded-lg text-gray-700 focus:outline-none focus:border-blue-500">
+            {positions.map(position => (
+              <option key={position.idPosition} value={position.idPosition}>{position.name}</option>
+            ))}
+          </select>
+        </div>
+        <button onClick={handleSearch} className="w-full py-2 bg-blue-500 text-white rounded-md hover:bg-blue-700">Pesquisar</button>
+        <div className="w-full flex justify-center mb-6 bg-gray-100 py-3 rounded-md mt-4">
           <div className="w-full sm:w-2/3">
             <Pie data={pieData} />
           </div>

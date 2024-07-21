@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "../../../../../lib/db";
+import { useSearchParams } from 'next/navigation'
 // import { getServerSession } from "next-auth/next";
 
 // Define a type for the candidate including the nested Position and vote count
@@ -20,14 +21,18 @@ type CandidateWithVoteCount = {
     voteCount: number;
 };
 
-export async function GET(req: NextRequest, { params }: { params: { idCity: string } }) {
-    const { idCity } = params;
+export async function GET(req: NextRequest, { params }: { params: { idCity: string, idPosition: string } }) {
+
+    console.log("\n\n-----------\n", params)
+
+    const { idCity, idPosition } = params;
 
     try {
         // Buscar todos os candidatos para a cidade especificada e contar os votos
         const candidates = await prisma.candidate.findMany({
             where: {
                 idCity,
+                idPosition
             },
             include: {
                 Position: true,

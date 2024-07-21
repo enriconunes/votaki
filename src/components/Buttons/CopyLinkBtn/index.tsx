@@ -6,7 +6,7 @@ export default function CopyLinkBtn() {
     const [copied, setCopied] = useState(false);
 
     const copyToClipboard = () => {
-        navigator.clipboard.writeText("http://localhost:3000").then(() => {
+        navigator.clipboard.writeText("https://www.votaki.com.br/").then(() => {
             setCopied(true);
             toast.success("Link copiado para a área de transferência!");
             setTimeout(() => setCopied(false), 2000);
