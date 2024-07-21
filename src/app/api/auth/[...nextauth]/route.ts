@@ -2,7 +2,7 @@ import NextAuth from "next-auth"
 import GoogleProvider from "next-auth/providers/google";
 import { Session } from "next-auth";
 
-const adminEmails = ["enriconunesubi@gmail.com", "lcezarsm@gmail.com", "admin3@gmail.com"];
+const adminEmails = ["enriconunesubi@gmail.com", "lcezarsm@gmail.com", "jhonmerces01@gmail.com"];
 
 const handler = NextAuth({
     providers: [
