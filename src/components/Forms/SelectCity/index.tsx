@@ -37,7 +37,7 @@ export default function SelectCity({ handleSelectCity }: SelectCityProps) {
     return (
         <div className="relative w-full">
             <select
-                className="rounded-md w-full p-3 text-white bg-red-600 focus:border-gray-300 focus:outline-none font-medium"
+                className="rounded-md w-full p-3 text-white bg-teal-900 focus:border-gray-300 focus:outline-none font-medium"
                 value={selectedCity}
                 onChange={handleChange}
             >
@@ -46,7 +46,7 @@ export default function SelectCity({ handleSelectCity }: SelectCityProps) {
                     <option key={city.idCity} value={city.idCity}>{city.name}</option>
                 ))}
             </select>
-            <div className={`${isLoading ? 'absolute' : 'hidden'} inset-0 bg-gray-800 rounded-md flex items-center justify-center`}>
+            <div className={`${isLoading ? 'absolute' : 'hidden'} inset-0 bg-gray-900 rounded-md flex items-center justify-center`}>
                 <div className="loader text-gray-100 font-medium">Carregando...</div>
             </div>
         </div>

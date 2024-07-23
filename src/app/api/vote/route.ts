@@ -76,6 +76,7 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
+
     const { email, idCandidate } = await req.json();
 
     try {
@@ -94,7 +95,8 @@ export async function POST(req: NextRequest) {
         });
 
         if (existingVotes.length > 0) {
-            // Buscar a posição do candidato atual passado na requisicao
+
+            // Buscar a posição do candidato atual enviado na requisicao
             const candidate = await prisma.candidate.findUnique({
                 where: {
                     idCandidate,
@@ -104,6 +106,7 @@ export async function POST(req: NextRequest) {
                 },
             });
 
+            // Segurança extra para garantir que o candidato selecionado existe na db
             if (!candidate) {
                 return NextResponse.json({ message: "Candidato não encontrado.", status: 404 });
             }
@@ -111,17 +114,18 @@ export async function POST(req: NextRequest) {
             const candidatePositionId = candidate.idPosition;
             const candidatePositionName = candidate.Position.name;
 
-            // Verificar se o email já votou para a mesma posição
+            // Verificar se o email já votou para o mesmo cargo
             // 'existingVotes' é um array com todos os registros de votos deste email
             // o ciclo abaixo compara a posicao do candidato atual com a posicao dos candidatos presentes no array de registros
             for (const vote of existingVotes) {
                 if (vote.Candidate.idPosition === candidatePositionId) {
-                    return NextResponse.json({ message: `Voce já votou para um candidato no cargo de ${candidatePositionName}. Selecione um candidato de outro cargo para fazer um novo voto.`, status: 400 });
+                    return NextResponse.json({ message: `Voce já votou para um candidato no cargo de ${candidatePositionName}.
+                                                        Selecione um candidato de outro cargo para fazer um novo voto.`, status: 400 });
                 }
             }
         }
 
-        // Criar um novo voto
+        // Se passar por todas as condições, criar novo voto
         const vote = await prisma.vote.create({
             data: {
                 email,

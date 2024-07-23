@@ -30,7 +30,7 @@ type CandidateProps = {
   image: string;
   idPosition: string;
   idParty: string;
-  city: City;
+  City: City;
   createdAt: string;
   updatedAt: string;
   Position: Position;
@@ -142,7 +142,7 @@ export default function MetricsPage() {
   }
 
   return (
-    <div className="flex flex-col items-center min-h-screen bg-red-600">
+    <div className="flex flex-col items-center min-h-screen">
       <LogoutBtn />
       <ReturnBtn endpoint={'/dashboard'}/>
       <img src={"/LogoWhite.png"} alt="Logo Votaki" className="sm:w-2/6 w-2/3 mb-6 mt-16" />
@@ -153,7 +153,7 @@ export default function MetricsPage() {
           </div>
         )}
         <h1 className="text-center text-base font-bold text-white mb-4">
-          Métricas para {"candidates[0]?.city.name"}
+          Métricas para {candidates[0]?.City.name}
         </h1>
         <div className="mb-4">
           <label htmlFor="city" className="block text-white mb-2">Cidade:</label>

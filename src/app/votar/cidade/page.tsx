@@ -39,12 +39,12 @@ export default function Votar() {
   }
 
   return (
-    <div className="flex flex-col justify-center items-center min-h-screen bg-red-600 relative">
+    <div className="flex flex-col justify-center items-center min-h-screen relative">
       <LogoutBtn />
 
       {(session && session.user.role === 'admin') && (
         <button
-        className={`bg-red-700 flex justify-center items-center gap-x-3 py-2 px-3 rounded-md text-white hover:cursor-pointer font-medium hover:brightness-90 absolute top-0 left-0 z-50 m-4 text-xs`}
+        className={`bg-gray-900 flex justify-center items-center gap-x-3 py-2 px-3 rounded-md text-white hover:cursor-pointer font-medium hover:brightness-90 absolute top-0 left-0 z-50 m-4 text-xs`}
         onClick={ () => router.push(`/dashboard`)}
         >
             <div className="flex items-center gap-x-1">

@@ -93,7 +93,7 @@ export default function AdminPage() {
   }
 
   return (
-    <div className="flex flex-col items-center min-h-screen bg-red-600 relative">
+    <div className="flex flex-col items-center min-h-screen relative">
       <LogoutBtn />
       <ReturnBtn endpoint={'/votar/cidade'}/>
 
@@ -104,7 +104,7 @@ export default function AdminPage() {
           Seja bem-vindo, {session?.user.name}!
         </h1>
 
-        <button className="bg-red-700 text-white w-full mb-4 py-2 rounded-md md:py-3 font-medium hover:bg-red-800"
+        <button className="bg-teal-900 text-white w-full mb-4 py-2 rounded-md md:py-3 font-medium hover:bg-teal-950 border"
         onClick={() => router.push('dashboard/metricas')}>
             Visualizar métricas
         </button>

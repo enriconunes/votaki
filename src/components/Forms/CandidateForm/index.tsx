@@ -85,7 +85,7 @@ export default function CandidateForm({ cities, parties, positions, candidates }
       {/* Button to toggle form collapse */}
       <button
         type="button"
-        className="flex items-center justify-between w-full p-5 font-medium text-gray-500 border border-b-0 border-gray-200 hover:bg-gray-100 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-800 gap-3 mb-3 bg-red-50"
+        className="flex items-center justify-between w-full p-5 font-medium text-gray-500 border border border-gray-200 hover:bg-gray-100 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-800 gap-3 mb-3 bg-teal-50"
         onClick={() => toggleCollapse("form")}
       >
         <span>Cadastrar novo candidato</span>
@@ -174,7 +174,7 @@ export default function CandidateForm({ cities, parties, positions, candidates }
             </select>
           </div>
           <div className="text-right">
-            <button type="submit" className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-800 w-full">Cadastrar</button>
+            <button type="submit" className="px-4 py-2 bg-teal-900 text-white rounded-md hover:bg-teal-950 w-full">Cadastrar</button>
           </div>
         </form>
       </div>

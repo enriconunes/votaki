@@ -113,7 +113,7 @@ export default function Votar() {
     }
     
     return (
-        <div className="flex flex-col justify-center items-center min-h-screen bg-red-600 relative">
+        <div className="flex flex-col justify-center items-center min-h-screen relative">
             <LogoutBtn />
             <ReturnBtn endpoint={'/votar/cidade'}/>
             <img src={"/LogoWhite.png"} alt="Logo Votaki" className="sm:w-2/6 w-2/3 mt-16 md:mt-10" />
@@ -145,7 +145,7 @@ export default function Votar() {
                                             </div>
                                             <p className="text-sm text-gray-500 mb-2 min-h-24">{candidate.description}</p>
                                             <button
-                                                className="bg-red-700 w-full text-white font-medium py-2 px-4 rounded-lg hover:bg-red-800"
+                                                className="bg-teal-900 w-full text-white font-medium py-2 px-4 rounded-lg hover:bg-teal-950"
                                                 onClick={() => handleSelect(candidate.idCandidate, candidate.name)}
                                             >
                                                 Votar
@@ -174,7 +174,7 @@ export default function Votar() {
                             </button>
 
                             <button
-                                className="bg-red-700 text-white font-medium py-2 px-4 rounded-lg hover:bg-red-800"
+                                className="bg-teal-900 text-white font-medium py-2 px-4 rounded-lg hover:bg-teal-950"
                                 onClick={handleVote}
                                 disabled={voteInProgress}
                             >
@@ -202,7 +202,7 @@ export default function Votar() {
                             </button>
 
                             <button
-                                className="bg-red-700 text-white font-medium py-2 px-4 rounded-lg hover:bg-red-800"
+                                className="bg-teal-900 text-white font-medium py-2 px-4 rounded-lg hover:bg-teal-950"
                                 onClick={() => {signOut()}}
                             >
                                 Finalizar pesquisa
