@@ -1,6 +1,5 @@
 'use client';
 
-import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import { toast } from "react-toastify"
 import LogoutBtn from "@/components/Buttons/LogoutBtn";
 import SelectCity from "@/components/Forms/SelectCity";
