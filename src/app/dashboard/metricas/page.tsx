@@ -10,6 +10,8 @@ import api from "@/services/axiosConfig";
 import { Pie } from 'react-chartjs-2';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import ReturnBtn from "@/components/Buttons/ReturnBtn";
+import { FcHeatMap } from "react-icons/fc";
+import Map from "@/components/HeatMap";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -193,7 +195,11 @@ export default function MetricsPage() {
             </div>
           ))}
         </div>
+
+        <Map />
+        
       </div>
+
     </div>
   );
 }
