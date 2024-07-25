@@ -3,7 +3,8 @@ import { FaEdit } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
 import { toast } from "react-toastify";
 import api from "@/services/axiosConfig"; // Certifique-se de que o caminho esteja correto para o seu projeto
-import { UploadButton } from "@uploadthing/react";
+import { UploadButton, UploadDropzone, Uploader } from "@uploadthing/react";
+import { OurFileRouter } from "@/app/api/uploadthing/core";
 
 type City = {
   idCity: string;
@@ -51,6 +52,7 @@ export default function CandidatesListing({ candidates, cities, parties, positio
     const [editPosition, setEditPosition] = useState("");
     const [editParty, setEditParty] = useState("");
     const [editCity, setEditCity] = useState("");
+    const [atualEditImage, setAtualEditImage] = useState("");
 
 
     const toggleCollapse = (id: string) => {
@@ -78,6 +80,7 @@ export default function CandidatesListing({ candidates, cities, parties, positio
         setEditPosition(candidate.idPosition);
         setEditParty(candidate.idParty);
         setEditCity(candidate.idCity);
+        setAtualEditImage(candidate.image);
     };
 
     const handleEditSubmit = async () => {
@@ -171,22 +174,40 @@ export default function CandidatesListing({ candidates, cities, parties, positio
 
         {editingCandidate && (
             <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50 z-50">
-                <div className="bg-white mx-3 p-6 rounded-lg shadow-lg max-w-sm w-full text-center">
+                <div className="bg-white mx-3 p-6 rounded-lg shadow-lg max-w-sm w-full text-center max-h-[600px] overflow-y-scroll">
                     <h2 className="text-xl font-bold mb-4">Editar Candidato</h2>
 
+                    <img
+                    src={atualEditImage}
+                    alt="imagem do candidato"
+                    className="w-28 h-28 object-cover rounded-full mx-auto mb-2"/>
                     {/* upload image with uploadThing */}
-                    {/* <UploadButton
+                    <UploadButton<OurFileRouter, "imageUploader">
                         endpoint="imageUploader"
-                        onClientUploadComplete={(res: any) => {
-                        // Do something with the response
-                        console.log("Files: ", res);
-                        alert("Upload Completed");
+                        onClientUploadComplete={(url: any) => {
+                            setAtualEditImage(url?.[0].url)
+
+                                try{
+
+                                    api.put('api/candidate/avatar',
+                                        {
+                                            idCandidate: editingCandidate.idCandidate,
+                                            image: url?.[0].url
+                                        }
+                                    )
+
+                                    toast.success("Imagem alterada com sucesso.")
+                                    return
+
+                                } catch(error){
+                                    toast.error("Erro ao alterar imagem: " + error)
+                                    return
+                                }
                         }}
-                        onUploadError={(error: Error) => {
-                        // Do something with the error.
-                        alert(`ERROR! ${error.message}`);
+                        onUploadError={(error: any) => {
+                            toast.error(`${error?.message}`)
                         }}
-                    /> */}
+                    />
 
                     <form className="text-left">
                         <div className="mb-4">
