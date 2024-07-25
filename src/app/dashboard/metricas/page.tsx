@@ -7,10 +7,14 @@ import { toast } from "react-toastify";
 import LogoutBtn from "@/components/Buttons/LogoutBtn";
 import LoadScreen from "@/components/LoadScreen";
 import api from "@/services/axiosConfig";
-import { Pie } from 'react-chartjs-2';
+import dynamic from 'next/dynamic'; // Importação dinâmica
+
+// Importação dinâmica do gráfico e do mapa
+const Pie = dynamic(() => import('react-chartjs-2').then(mod => mod.Pie), { ssr: false });
+const Map = dynamic(() => import('@/components/HeatMap'), { ssr: false });
+
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import ReturnBtn from "@/components/Buttons/ReturnBtn";
-import Map from "@/components/HeatMap";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -67,47 +71,47 @@ export default function MetricsPage() {
 
   async function fetchData() {
     try {
-        const response = await api.get<ApiResponse>(`/api/vote?idCity=${selectedCity}&idPosition=${selectedPosition}`);
-        const candidatesWithVoteCount = response.data.candidatesWithVoteCount;
+      const response = await api.get<ApiResponse>(`/api/vote?idCity=${selectedCity}&idPosition=${selectedPosition}`);
+      const candidatesWithVoteCount = response.data.candidatesWithVoteCount;
 
-        if(response.data.status !== 200){
-        return toast.error(response.data.message)
-        }
+      if (response.data.status !== 200) {
+        return toast.error(response.data.message);
+      }
 
-        const totalVotes = candidatesWithVoteCount.reduce((sum: number, candidate: CandidateProps) => sum + candidate.voteCount, 0);
+      const totalVotes = candidatesWithVoteCount.reduce((sum: number, candidate: CandidateProps) => sum + candidate.voteCount, 0);
 
-        setCandidates(candidatesWithVoteCount);
-        setTotalVotes(totalVotes);
+      setCandidates(candidatesWithVoteCount);
+      setTotalVotes(totalVotes);
     } catch (error) {
-        toast.error("Erro ao buscar dados: " + error);
+      toast.error("Erro ao buscar dados: " + error);
     } finally {
-        setIsLoading(false);
+      setIsLoading(false);
     }
   }
 
   async function fetchFilters() {
     try {
-        const [citiesResponse, positionsResponse] = await Promise.all([
+      const [citiesResponse, positionsResponse] = await Promise.all([
         api.get('/api/city'),
         api.get('/api/position')
-        ]);
+      ]);
 
-        setCities(citiesResponse.data.cities);
-        setPositions(positionsResponse.data.positions);
+      setCities(citiesResponse.data.cities);
+      setPositions(positionsResponse.data.positions);
     } catch (error) {
-        toast.error("Erro ao buscar dados dos filtros");
+      toast.error("Erro ao buscar dados dos filtros");
     } finally {
-        setIsLoading(false);
+      setIsLoading(false);
     }
   }
 
   const handleCityChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setIsLoading(true)
+    setIsLoading(true);
     setSelectedCity(e.target.value);
   };
 
   const handlePositionChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setIsLoading(true)
+    setIsLoading(true);
     setSelectedPosition(e.target.value);
   };
 
@@ -149,7 +153,7 @@ export default function MetricsPage() {
       <img src={"/LogoWhite.png"} alt="Logo Votaki" className="sm:w-2/6 w-2/3 mb-6 mt-16" />
       <div className="p-4 w-full sm:max-w-2xl relative">
         {isLoading && (
-          <div className="absolute inset-0 bg-red-900 bg-opacity-75 flex items-center justify-center z-10">
+          <div className="absolute inset-0 bg-cyan-900 bg-opacity-75 flex items-center justify-center z-10">
             <div className="loader text-gray-100 font-medium">Carregando pesquisa...</div>
           </div>
         )}
@@ -194,9 +198,8 @@ export default function MetricsPage() {
             </div>
           ))}
         </div>
-        
-        {(typeof window !== "undefined") && <Map />}
-        
+
+        <Map />
 
       </div>
 
