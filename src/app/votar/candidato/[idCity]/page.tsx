@@ -13,6 +13,7 @@ import ReturnBtn from "@/components/Buttons/ReturnBtn";
 import { TbLoader } from "react-icons/tb";
 import CopyLinkBtn from "@/components/Buttons/CopyLinkBtn";
 import { signOut } from "next-auth/react"
+import CandidateFilterNumber from "@/components/Forms/CandidadeFilterNumber";
 
 type Party = {
     idParty: string;
@@ -23,6 +24,7 @@ type CandidateProps = {
     idCandidate: string;
     name: string;
     description: string;
+    number: string;
     image: string;
     idPosition: string;
     idParty: string;
@@ -48,6 +50,7 @@ export default function Votar() {
         }
     }, [status, router, session]);
 
+    const [candidateNumber, setCandidateNumber] = useState('');
     const [positions, setPositions] = useState<PositionsResponse[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [voteInProgress, setVoteInProgress] = useState(false);
@@ -59,7 +62,8 @@ export default function Votar() {
     const { idCity } = useParams()
     
     async function getData() {
-        const response = await api.get(`/api/candidate/city/${idCity}`);
+        // se candidateNumber for vazio, passa number=all como parametro, senao passa o valor do number selecionado no input
+        const response = await api.get(`/api/candidate/positions?idCity=${idCity}&number=${!candidateNumber ? 'all' : candidateNumber}`);
         const responseData = response.data.positions as PositionsResponse[];
         setPositions(responseData);
         setIsLoading(false);
@@ -67,14 +71,15 @@ export default function Votar() {
     
     useEffect(() => {
         getData();
-    }, []);
+    }, [candidateNumber]);
 
+    // status do useSession(), nextAuth
     if (status === 'loading') {
         return <LoadScreen />
     }
 
+    // selecionar candidato e abrir modal para confimacao do voto
     function handleSelect(idCandidate: string, name: string){
-        // toast.info(`Você votou em ${name} com o id ${idCandidate}`);
         setCandidateSelectedId(idCandidate)
         setCandidateSelectedName(name)
         setShowModal(true);
@@ -88,6 +93,7 @@ export default function Votar() {
         setShowFinalModal(false);
     }
 
+    // finalizar voto dentro do modal de confirmacao
     async function handleVote(){
 
         setVoteInProgress(true)
@@ -111,6 +117,11 @@ export default function Votar() {
             return
         }
     }
+
+    // funcao usada dentro do componente de filtragem de candidatos pelo numero. 
+    function handleSetCandidateNumber(number: string){
+        setCandidateNumber(number)
+    }
     
     return (
         <div className="flex flex-col justify-center items-center min-h-screen relative">
@@ -125,13 +136,22 @@ export default function Votar() {
                 </div>
             ) : (
                 <div className="p-4 w-full sm:max-w-2xl">
+
+                    {/* filter candidate by number */}
+                    <CandidateFilterNumber
+                    candidateNumber={candidateNumber}
+                    handleSetCandidateNumber={handleSetCandidateNumber}
+                    />
+
                     {positions.map((position) => (
                         <div key={position.idPosition} className="my-8">
                             <h2 className="text-2xl font-bold text-white mb-4">{position.name}</h2>
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 {position.Candidate.length == 0 ? (
                                     <div className="p-4 bg-white border border-gray-200 rounded-lg shadow-lg">
-                                        <h3 className="font-semibold text-gray-600 flex">Nenhum candidato a {position.name} foi encontrado na cidade selecionada.</h3>
+                                        <h3 className="font-semibold text-gray-600 flex">
+                                                Nenhum candidato a {position.name} foi encontrado na sua cidade{!candidateNumber ? '.' : ` com o número ${candidateNumber}.`}
+                                        </h3>
                                     </div>
                                 ) : (
                                     position.Candidate.map((candidate) => (
@@ -139,8 +159,8 @@ export default function Votar() {
                                             <div className="flex items-center justify-between mb-4">
                                                 <img src={candidate.image} alt={candidate.name} className="w-16 h-16 rounded-full object-cover" />
                                                 <div className="flex flex-col items-end">
-                                                    <h3 className="text-lg font-semibold">{candidate.name}</h3>
-                                                    <h3 className="text-lg font-semibold text-gray-600">{candidate.Party.name}</h3>
+                                                    <h3 className="font-extrabold text-xl text-cyan-800">{candidate.number} - {candidate.Party.name}</h3>
+                                                    <h3 className="text-lg font-extrabold text-gray-700">{candidate.name}</h3>
                                                 </div>
                                             </div>
                                             <p className="text-sm text-gray-500 mb-2 min-h-24">{candidate.description}</p>

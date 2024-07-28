@@ -27,6 +27,7 @@ type CandidateProps = {
   idCandidate: string;
   name: string;
   description: string;
+  number: string;
   image: string;
   idPosition: string;
   idParty: string;
@@ -46,6 +47,7 @@ type CandidateFormProps = {
 };
 
 export default function CandidateForm({ cities, parties, positions, candidates }: CandidateFormProps) {
+  const [number, setNumber] = useState("");
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [position, setPosition] = useState(positions.length > 0 ? positions[0].idPosition : "");
@@ -60,7 +62,7 @@ export default function CandidateForm({ cities, parties, positions, candidates }
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
 
-    if(!name || !description || !position || !party || !city){
+    if(!name || !description || !position || !party || !city || !number){
       toast.error("Preencha todos os campos para cadastrar um novo candidato.");
       return
     }
@@ -69,6 +71,7 @@ export default function CandidateForm({ cities, parties, positions, candidates }
       await api.post('/api/candidate', {
         name,
         description,
+        number,
         idPosition: position,
         idParty: party,
         idCity: city,
@@ -78,6 +81,7 @@ export default function CandidateForm({ cities, parties, positions, candidates }
 
       // Reset form
       setName("");
+      setNumber("");
       setDescription("");
       setPosition("");
       setParty("");
@@ -119,6 +123,17 @@ export default function CandidateForm({ cities, parties, positions, candidates }
         className={`${activeCollapse === "form" ? 'block' : 'hidden'} p-5 border border-b-0 border-gray-200 dark:border-gray-700 dark:bg-gray-900 mt-4`}
       >
         <form onSubmit={handleSubmit}>
+          <div className="mb-4">
+            <label htmlFor="name" className="block text-gray-700">Número:</label>
+            <input 
+              type="text"
+              id="number" 
+              name="number" 
+              className="w-full px-4 py-2 border rounded-lg text-gray-700 focus:outline-none focus:border-blue-500"
+              value={number}
+              onChange={(e) => setNumber(e.target.value)}
+            />
+          </div>
           <div className="mb-4">
             <label htmlFor="name" className="block text-gray-700">Nome:</label>
             <input 

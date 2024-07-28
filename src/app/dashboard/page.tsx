@@ -33,6 +33,7 @@ type CandidateProps = {
   idCandidate: string;
   name: string;
   description: string;
+  number: string;
   image: string;
   idPosition: string;
   idParty: string;
@@ -44,7 +45,7 @@ type CandidateProps = {
   Position: Position;
 };
 
-export default function AdminPage() {
+export default function Dashboard() {
   const { data: session, status } = useSession();
   const router = useRouter();
 

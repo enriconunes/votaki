@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import prisma from "../../../../lib/db";
 // import { getServerSession } from "next-auth/next";
 
+// listar todos os candidatos, incluindo cidade, partido e cargo
 export async function GET(req: NextRequest) {
 
     // const session = await getServerSession();
@@ -44,9 +45,10 @@ export async function GET(req: NextRequest) {
     //     });
 }
 
+// criar novo candidato
 export async function POST(req: NextRequest) {
 
-    const { name, description, idPosition, idParty, idCity } = await req.json();
+    const { name, description, number, idPosition, idParty, idCity } = await req.json();
 
     try {
 
@@ -54,6 +56,7 @@ export async function POST(req: NextRequest) {
             data: {
                 name,
                 description,
+                number,
                 idPosition,
                 idParty,
                 idCity,
@@ -70,15 +73,16 @@ export async function POST(req: NextRequest) {
     }
 }
 
+// editar candidato
 export async function PUT(req: NextRequest) {
-    const { idCandidate, name, description, idPosition, idParty, idCity } = await req.json();
+    const { idCandidate, name, description, number, idPosition, idParty, idCity } = await req.json();
     try {
         const candidate = await prisma.candidate.update({
             where: {
                 idCandidate,
             },
             data: {
-                name, description, idPosition, idParty, idCity
+                name, description, number, idPosition, idParty, idCity
             },
         });
         return NextResponse.json({ candidate, status: 200 });

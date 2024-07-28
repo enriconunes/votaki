@@ -26,6 +26,7 @@ type CandidateProps = {
   name: string;
   description: string;
   image: string;
+  number: string;
   idPosition: string;
   idParty: string;
   idCity: string;
@@ -49,6 +50,7 @@ export default function CandidatesListing({ candidates, cities, parties, positio
     const [editingCandidate, setEditingCandidate] = useState<CandidateProps | null>(null);
     const [editName, setEditName] = useState("");
     const [editDescription, setEditDescription] = useState("");
+    const [editNumber, setEditNumber] = useState("");
     const [editPosition, setEditPosition] = useState("");
     const [editParty, setEditParty] = useState("");
     const [editCity, setEditCity] = useState("");
@@ -76,6 +78,7 @@ export default function CandidatesListing({ candidates, cities, parties, positio
     const openEditModal = (candidate: CandidateProps) => {
         setEditingCandidate(candidate);
         setEditName(candidate.name);
+        setEditNumber(candidate.number);
         setEditDescription(candidate.description);
         setEditPosition(candidate.idPosition);
         setEditParty(candidate.idParty);
@@ -90,6 +93,7 @@ export default function CandidatesListing({ candidates, cities, parties, positio
             await api.put(`/api/candidate`, {
                 idCandidate: editingCandidate.idCandidate,
                 name: editName,
+                number: editNumber,
                 description: editDescription,
                 idPosition: editPosition,
                 idParty: editParty,
@@ -134,6 +138,7 @@ export default function CandidatesListing({ candidates, cities, parties, positio
                 </svg>
                 </button>
                 <div className={`${activeCollapse === candidate.idCandidate ? 'block' : 'hidden'} p-5 border border-b-0 border-gray-200 dark:border-gray-700 dark:bg-gray-900`}>
+                <p className="mb-2 text-gray-500 dark:text-gray-400"><strong>Número:</strong> {candidate.number}</p>
                 <p className="mb-2 text-gray-500 dark:text-gray-400"><strong>Descrição:</strong> {candidate.description}</p>
                 <p className="mb-2 text-gray-500 dark:text-gray-400"><strong>Posição:</strong> {candidate.Position.name}</p>
                 <p className="mb-2 text-gray-500 dark:text-gray-400"><strong>Partido:</strong> {candidate.Party.name}</p>
@@ -211,83 +216,94 @@ export default function CandidatesListing({ candidates, cities, parties, positio
 
                     <form className="text-left">
                         <div className="mb-4">
-                        <label htmlFor="editName" className="block text-gray-700">Nome:</label>
-                        <input
-                            type="text"
-                            id="editName"
-                            name="editName"
-                            className="w-full px-4 py-2 border rounded-lg text-gray-700 focus:outline-none focus:border-blue-500"
-                            value={editName}
-                            onChange={(e) => setEditName(e.target.value)}
-                        />
+                            <label htmlFor="editName" className="block text-gray-700">Número:</label>
+                            <input
+                                type="text"
+                                id="editNumber"
+                                name="editNumber"
+                                className="w-full px-4 py-2 border rounded-lg text-gray-700 focus:outline-none focus:border-blue-500"
+                                value={editNumber}
+                                onChange={(e) => setEditNumber(e.target.value)}
+                            />
                         </div>
                         <div className="mb-4">
-                        <label htmlFor="editDescription" className="block text-gray-700">Descrição:</label>
-                        <textarea
-                            id="editDescription"
-                            name="editDescription"
-                            className="w-full px-4 py-2 border rounded-lg text-gray-700 focus:outline-none focus:border-blue-500"
-                            value={editDescription}
-                            onChange={(e) => setEditDescription(e.target.value)}
-                        />
+                            <label htmlFor="editName" className="block text-gray-700">Nome:</label>
+                            <input
+                                type="text"
+                                id="editName"
+                                name="editName"
+                                className="w-full px-4 py-2 border rounded-lg text-gray-700 focus:outline-none focus:border-blue-500"
+                                value={editName}
+                                onChange={(e) => setEditName(e.target.value)}
+                            />
                         </div>
                         <div className="mb-4">
-                        <label htmlFor="editPosition" className="block text-gray-700">Posição:</label>
-                        <select
-                            id="editPosition"
-                            name="editPosition"
-                            className="w-full px-4 py-2 border rounded-lg text-gray-700 focus:outline-none focus:border-blue-500"
-                            value={editPosition}
-                            onChange={(e) => setEditPosition(e.target.value)}
-                        >
-                            {positions.map(position => (
-                            <option key={position.idPosition} value={position.idPosition}>{position.name}</option>
-                            ))}
-                        </select>
+                            <label htmlFor="editDescription" className="block text-gray-700">Descrição:</label>
+                            <textarea
+                                id="editDescription"
+                                name="editDescription"
+                                className="w-full px-4 py-2 border rounded-lg text-gray-700 focus:outline-none focus:border-blue-500"
+                                value={editDescription}
+                                onChange={(e) => setEditDescription(e.target.value)}
+                            />
                         </div>
                         <div className="mb-4">
-                        <label htmlFor="editParty" className="block text-gray-700">Partido:</label>
-                        <select
-                            id="editParty"
-                            name="editParty"
-                            className="w-full px-4 py-2 border rounded-lg text-gray-700 focus:outline-none focus:border-blue-500"
-                            value={editParty}
-                            onChange={(e) => setEditParty(e.target.value)}
-                        >
-                            {parties.map(party => (
-                            <option key={party.idParty} value={party.idParty}>{party.name}</option>
-                            ))}
-                        </select>
+                            <label htmlFor="editPosition" className="block text-gray-700">Posição:</label>
+                            <select
+                                id="editPosition"
+                                name="editPosition"
+                                className="w-full px-4 py-2 border rounded-lg text-gray-700 focus:outline-none focus:border-blue-500"
+                                value={editPosition}
+                                onChange={(e) => setEditPosition(e.target.value)}
+                            >
+                                {positions.map(position => (
+                                <option key={position.idPosition} value={position.idPosition}>{position.name}</option>
+                                ))}
+                            </select>
                         </div>
                         <div className="mb-4">
-                        <label htmlFor="editCity" className="block text-gray-700">Cidade:</label>
-                        <select
-                            id="editCity"
-                            name="editCity"
-                            className="w-full px-4 py-2 border rounded-lg text-gray-700 focus:outline-none focus:border-blue-500"
-                            value={editCity}
-                            onChange={(e) => setEditCity(e.target.value)}
-                        >
-                            {cities.map(city => (
-                            <option key={city.idCity} value={city.idCity}>{city.name}</option>
-                            ))}
-                        </select>
+                            <label htmlFor="editParty" className="block text-gray-700">Partido:</label>
+                            <select
+                                id="editParty"
+                                name="editParty"
+                                className="w-full px-4 py-2 border rounded-lg text-gray-700 focus:outline-none focus:border-blue-500"
+                                value={editParty}
+                                onChange={(e) => setEditParty(e.target.value)}
+                            >
+                                {parties.map(party => (
+                                <option key={party.idParty} value={party.idParty}>{party.name}</option>
+                                ))}
+                            </select>
+                        </div>
+                        <div className="mb-4">
+                            <label htmlFor="editCity" className="block text-gray-700">Cidade:</label>
+                            <select
+                                id="editCity"
+                                name="editCity"
+                                className="w-full px-4 py-2 border rounded-lg text-gray-700 focus:outline-none focus:border-blue-500"
+                                value={editCity}
+                                onChange={(e) => setEditCity(e.target.value)}
+                            >
+                                {cities.map(city => (
+                                <option key={city.idCity} value={city.idCity}>{city.name}</option>
+                                ))}
+                            </select>
                         </div>
                         <div className="flex justify-center gap-x-2">
-                        <button
-                            type="button"
-                            className="bg-gray-600 text-white font-medium py-2 px-4 rounded-lg hover:bg-gray-700"
-                            onClick={() => setEditingCandidate(null)}
-                        >
-                            Cancelar
-                        </button>
-                        <button
-                            type="button"
-                            className="bg-teal-900 text-white font-medium py-2 px-4 rounded-lg hover:bg-teal-950"
-                            onClick={handleEditSubmit}
-                        >
-                            Confirmar
-                        </button>
+                            <button
+                                type="button"
+                                className="bg-gray-600 text-white font-medium py-2 px-4 rounded-lg hover:bg-gray-700"
+                                onClick={() => setEditingCandidate(null)}
+                            >
+                                Cancelar
+                            </button>
+                            <button
+                                type="button"
+                                className="bg-teal-900 text-white font-medium py-2 px-4 rounded-lg hover:bg-teal-950"
+                                onClick={handleEditSubmit}
+                            >
+                                Confirmar
+                            </button>
                         </div>
                     </form>
                 </div>

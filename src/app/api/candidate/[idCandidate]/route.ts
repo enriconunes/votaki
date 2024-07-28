@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import prisma from "../../../../../lib/db";
 // import { getServerSession } from "next-auth/next";
 
-// route to return the candidate datails using idCandidate param
+// retornar um cadidato especifico atraves do seu id
 export async function GET(req: NextRequest, { params }: { params: { idCandidate: string } }) {
 
     const idCandidate = params.idCandidate

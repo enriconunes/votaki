@@ -30,6 +30,7 @@ model Candidate {
   name        String   @db.VarChar(255)
   description String   @db.VarChar(255)
   image       String   @db.Text
+  number      String   @db.VarChar(10)
   idPosition  String
   idParty     String
   idCity      String

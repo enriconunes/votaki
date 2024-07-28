@@ -24,6 +24,7 @@ type CandidateWithVoteCount = {
     voteCount: number;
 };
 
+// obter votos de uma cidade e cargo específicos
 export async function GET(req: NextRequest) {
 
     const url = new URL(req.url)
