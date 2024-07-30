@@ -27,7 +27,7 @@ const fakeLocations = [
     { lat: -14.859, lng: -40.836 },
     { lat: -14.860, lng: -40.832 },
     { lat: -14.864, lng: -40.834 },
-    { lat: -14.862, lng: -40.832 }
+    { lat: -16.4307268, lng: -39.0945864 }
 ];
 
 // Definir um componente para configurar o mapa

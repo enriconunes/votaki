@@ -1,6 +1,6 @@
 'use client';
 
-import { toast } from "react-toastify"
+import { toast } from "react-toastify";
 import LogoutBtn from "@/components/Buttons/LogoutBtn";
 import SelectCity from "@/components/Forms/SelectCity";
 import LoadScreen from "@/components/LoadScreen";
@@ -8,12 +8,13 @@ import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { IoIosLock } from "react-icons/io";
-
+import { useLocation } from "@/context/LocationContext";
 
 export default function Votar() {
   const { data: session, status } = useSession();
   const router = useRouter();
-  const [selectedCity, setSelectedCity] = useState('');
+  const { coordinates, setCoordinates, locationError } = useLocation(); // Incluído locationError do contexto
+  const [selectedCity, setSelectedCity] = useState<string>('');
 
   useEffect(() => {
     if (status === 'unauthenticated') {
@@ -21,14 +22,38 @@ export default function Votar() {
     }
   }, [status, router]);
 
+  useEffect(() => {
+    if (!coordinates && navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const coords = {
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude,
+          };
+          setCoordinates(coords); // Atualiza o contexto com as novas coordenadas
+        },
+        (error) => {
+          // Se o erro já estiver no contexto, não há necessidade de setá-lo novamente
+          if (!locationError) {
+            setCoordinates(null); // Limpa as coordenadas no caso de erro
+            console.log(`Sem informações da geolocalização: ${error.message}`);
+          }
+        }
+      );
+    } else if (!navigator.geolocation) {
+      setCoordinates(null); // Limpa as coordenadas se a geolocalização não for suportada
+      console.log('Geolocalização não é suportada neste navegador.');
+    }
+  }, [coordinates, setCoordinates, locationError]);
+
   if (status === 'loading') {
-    return <LoadScreen />
+    return <LoadScreen />;
   }
 
   function handleRedirect(idCity: string) {
-    if(idCity == ''){
-        toast.warning("Selecione uma cidade para avançar.")
-        return
+    if (idCity === '') {
+      toast.warning("Selecione uma cidade para avançar.");
+      return;
     }
     router.push(`/votar/candidato/${idCity}`);
   }
@@ -43,13 +68,13 @@ export default function Votar() {
 
       {(session && session.user.role === 'admin') && (
         <button
-        className={`bg-gray-900 flex justify-center items-center gap-x-3 py-2 px-3 rounded-md text-white hover:cursor-pointer font-medium hover:brightness-90 absolute top-0 left-0 z-50 m-4 text-xs`}
-        onClick={ () => router.push(`/dashboard`)}
+          className="bg-gray-900 flex justify-center items-center gap-x-3 py-2 px-3 rounded-md text-white hover:cursor-pointer font-medium hover:brightness-90 absolute top-0 left-0 z-50 m-4 text-xs"
+          onClick={() => router.push(`/dashboard`)}
         >
-            <div className="flex items-center gap-x-1">
-                <IoIosLock className="-mt-1" size={15}/>
-                <span>Administrar sistema</span>
-            </div>
+          <div className="flex items-center gap-x-1">
+            <IoIosLock className="-mt-1" size={15} />
+            <span>Administrar sistema</span>
+          </div>
         </button>
       )}
 

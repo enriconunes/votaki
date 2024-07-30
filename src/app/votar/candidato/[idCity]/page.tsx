@@ -5,15 +5,16 @@ import LoadScreen from "@/components/LoadScreen";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { useParams } from 'next/navigation'
+import { useParams } from 'next/navigation';
 import api from "@/services/axiosConfig";
 import { toast } from "react-toastify";
 import LoadComponent from "@/components/LoadComponent";
 import ReturnBtn from "@/components/Buttons/ReturnBtn";
 import { TbLoader } from "react-icons/tb";
 import CopyLinkBtn from "@/components/Buttons/CopyLinkBtn";
-import { signOut } from "next-auth/react"
+import { signOut } from "next-auth/react";
 import CandidateFilterNumber from "@/components/Forms/CandidadeFilterNumber";
+import { useLocation } from "@/context/LocationContext";
 
 type Party = {
     idParty: string;
@@ -43,12 +44,8 @@ type PositionsResponse = {
 export default function Votar() {
     const { data: session, status } = useSession();
     const router = useRouter();
-
-    useEffect(() => {
-        if (status === 'unauthenticated') {
-            router.push('/');
-        }
-    }, [status, router, session]);
+    const { idCity } = useParams();
+    const { coordinates } = useLocation(); // Obtendo coordenadas do contexto
 
     const [candidateNumber, setCandidateNumber] = useState('');
     const [positions, setPositions] = useState<PositionsResponse[]>([]);
@@ -59,29 +56,40 @@ export default function Votar() {
     const [candidateSelectedId, setCandidateSelectedId] = useState('');
     const [candidateSelectedName, setCandidateSelectedName] = useState('');
 
-    const { idCity } = useParams()
-    
+    useEffect(() => {
+        if (status === 'unauthenticated') {
+            router.push('/');
+        }
+    }, [status, router, session]);
+
     async function getData() {
-        // se candidateNumber for vazio, passa number=all como parametro, senao passa o valor do number selecionado no input
         const response = await api.get(`/api/candidate/positions?idCity=${idCity}&number=${!candidateNumber ? 'all' : candidateNumber}`);
         const responseData = response.data.positions as PositionsResponse[];
         setPositions(responseData);
         setIsLoading(false);
     }
-    
+
+    // Log das coordenadas do contexto
+    useEffect(() => {
+        if (coordinates) {
+            console.log('Latitude:', coordinates.latitude);
+            console.log('Longitude:', coordinates.longitude);
+        } else {
+            console.log("Sem localização");
+        }
+    }, [coordinates]);
+
     useEffect(() => {
         getData();
     }, [candidateNumber]);
 
-    // status do useSession(), nextAuth
     if (status === 'loading') {
-        return <LoadScreen />
+        return <LoadScreen />;
     }
 
-    // selecionar candidato e abrir modal para confimacao do voto
-    function handleSelect(idCandidate: string, name: string){
-        setCandidateSelectedId(idCandidate)
-        setCandidateSelectedName(name)
+    function handleSelect(idCandidate: string, name: string) {
+        setCandidateSelectedId(idCandidate);
+        setCandidateSelectedName(name);
         setShowModal(true);
     }
 
@@ -89,44 +97,44 @@ export default function Votar() {
         setShowModal(false);
     }
 
-    function handleCloseFinalModal(){
+    function handleCloseFinalModal() {
         setShowFinalModal(false);
     }
 
-    // finalizar voto dentro do modal de confirmacao
-    async function handleVote(){
-
-        setVoteInProgress(true)
+    // efetuar voto
+    async function handleVote() {
+        setVoteInProgress(true);
 
         const response = await api.post(`api/vote`, {
             email: session?.user?.email,
-            idCandidate: candidateSelectedId
+            idCandidate: candidateSelectedId,
+            latitude: coordinates?.latitude || null,
+            longitude: coordinates?.longitude || 'null'
         });
 
-        setVoteInProgress(false)
+        setVoteInProgress(false);
 
-        if(response.data.status !== 200){
-            toast.error(response.data.message)
-            return
+        if (response.data.status !== 200) {
+            toast.error(response.data.message);
+            return;
         }
 
-        if(response.data.status === 200){
-            toast.success("Voto confirmado com sucesso!")
-            handleCloseModal()
-            setShowFinalModal(true)
-            return
+        if (response.data.status === 200) {
+            toast.success("Voto confirmado com sucesso!");
+            handleCloseModal();
+            setShowFinalModal(true);
+            return;
         }
     }
 
-    // funcao usada dentro do componente de filtragem de candidatos pelo numero. 
-    function handleSetCandidateNumber(number: string){
-        setCandidateNumber(number)
+    function handleSetCandidateNumber(number: string) {
+        setCandidateNumber(number);
     }
-    
+
     return (
         <div className="flex flex-col justify-center items-center min-h-screen relative">
             <LogoutBtn />
-            <ReturnBtn endpoint={'/votar/cidade'}/>
+            <ReturnBtn endpoint={'/votar/cidade'} />
             <img src={"/LogoWhite.png"} alt="Logo Votaki" className="sm:w-2/6 w-2/3 mt-16 md:mt-10" />
 
             {isLoading ? (
@@ -139,8 +147,8 @@ export default function Votar() {
 
                     {/* filter candidate by number */}
                     <CandidateFilterNumber
-                    candidateNumber={candidateNumber}
-                    handleSetCandidateNumber={handleSetCandidateNumber}
+                        candidateNumber={candidateNumber}
+                        handleSetCandidateNumber={handleSetCandidateNumber}
                     />
 
                     {positions.map((position) => (
@@ -150,7 +158,7 @@ export default function Votar() {
                                 {position.Candidate.length == 0 ? (
                                     <div className="p-4 bg-white border border-gray-200 rounded-lg shadow-lg">
                                         <h3 className="font-semibold text-gray-600 flex">
-                                                Nenhum candidato a {position.name} foi encontrado na sua cidade{!candidateNumber ? '.' : ` com o número ${candidateNumber}.`}
+                                            Nenhum candidato a {position.name} foi encontrado na sua cidade{!candidateNumber ? '.' : ` com o número ${candidateNumber}.`}
                                         </h3>
                                     </div>
                                 ) : (
@@ -187,8 +195,8 @@ export default function Votar() {
 
                         <div className="flex justify-center gap-x-2">
                             <button
-                            className="bg-gray-600 text-white font-medium py-2 px-4 rounded-lg hover:bg-gray-700"
-                            onClick={handleCloseModal}
+                                className="bg-gray-600 text-white font-medium py-2 px-4 rounded-lg hover:bg-gray-700"
+                                onClick={handleCloseModal}
                             >
                                 Cancelar
                             </button>
@@ -215,15 +223,15 @@ export default function Votar() {
 
                         <div className="flex justify-center gap-x-2 mt-4">
                             <button
-                            className="bg-gray-600 text-white font-medium py-2 px-4 rounded-lg hover:bg-gray-700"
-                            onClick={handleCloseFinalModal}
+                                className="bg-gray-600 text-white font-medium py-2 px-4 rounded-lg hover:bg-gray-700"
+                                onClick={handleCloseFinalModal}
                             >
                                 Novo voto
                             </button>
 
                             <button
                                 className="bg-teal-900 text-white font-medium py-2 px-4 rounded-lg hover:bg-teal-950"
-                                onClick={() => {signOut()}}
+                                onClick={() => { signOut() }}
                             >
                                 Finalizar pesquisa
                             </button>

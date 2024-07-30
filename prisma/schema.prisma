@@ -43,10 +43,21 @@ model Candidate {
 }
 
 model Vote {
-  email       String    @db.VarChar(255)
+  idVote      String       @id @default(uuid()) @db.Char(36)
+  email       String       @db.VarChar(255)
   idCandidate String
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  Candidate   Candidate @relation(fields: [idCandidate], references: [idCandidate])
-  @@id([email, idCandidate])
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  Candidate   Candidate    @relation(fields: [idCandidate], references: [idCandidate])
+  Geolocation Geolocation?
+}
+
+model Geolocation {
+  id          String   @id @default(uuid()) @db.Char(36)
+  latitude    Float
+  longitude   Float
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  idVote      String   @unique
+  Vote        Vote     @relation(fields: [idVote], references: [idVote])
 }
