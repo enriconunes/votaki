@@ -7,9 +7,8 @@ import { toast } from "react-toastify";
 import LogoutBtn from "@/components/Buttons/LogoutBtn";
 import LoadScreen from "@/components/LoadScreen";
 import api from "@/services/axiosConfig";
-import dynamic from 'next/dynamic'; // Importação dinâmica
+import dynamic from 'next/dynamic';
 
-// Importação dinâmica do gráfico e do mapa
 const Pie = dynamic(() => import('react-chartjs-2').then(mod => mod.Pie), { ssr: false });
 const Map = dynamic(() => import('@/components/HeatMap'), { ssr: false });
 
@@ -59,6 +58,7 @@ export default function MetricsPage() {
   const [positions, setPositions] = useState<Position[]>([]);
   const [selectedCity, setSelectedCity] = useState<string>("be15e03e-67ea-4124-b318-370ccb1d795a");
   const [selectedPosition, setSelectedPosition] = useState<string>("4b1551c8-4913-446e-a916-d2ebc55d2b97");
+  const [selectedCandidateId, setSelectedCandidateId] = useState<string | null>(null);
 
   useEffect(() => {
     if (status === 'unauthenticated' || (session && session.user.role !== 'admin')) {
@@ -115,6 +115,14 @@ export default function MetricsPage() {
     setSelectedPosition(e.target.value);
   };
 
+  const handleCandidateClick = (idCandidate: string) => {
+    setSelectedCandidateId(idCandidate);
+  };
+
+  const closeMap = () => {
+    setSelectedCandidateId(null);
+  };
+
   const pieData = {
     labels: candidates.map(candidate => candidate.name),
     datasets: [
@@ -147,7 +155,7 @@ export default function MetricsPage() {
   }
 
   return (
-    <div className="flex flex-col items-center min-h-screen">
+    <div className="flex flex-col items-center min-h-screen pb-16">
       <LogoutBtn />
       <ReturnBtn endpoint={'/dashboard'}/>
       <img src={"/LogoWhite.png"} alt="Logo Votaki" className="sm:w-2/6 w-2/3 mb-6 mt-16" />
@@ -186,7 +194,11 @@ export default function MetricsPage() {
         </div>
         <div className="w-full space-y-4">
           {candidates.map(candidate => (
-            <div key={candidate.idCandidate} className="bg-gray-100 p-4 rounded shadow">
+            <div 
+              key={candidate.idCandidate} 
+              className="bg-gray-100 p-4 rounded shadow cursor-pointer"
+              onClick={() => handleCandidateClick(candidate.idCandidate)}
+            >
               <div className="flex items-center space-x-4">
                 <img src={candidate.image} alt={candidate.name} className="w-16 h-16 object-cover rounded-full" />
                 <div>
@@ -198,11 +210,19 @@ export default function MetricsPage() {
             </div>
           ))}
         </div>
-
-        <Map />
-
+        
+        {selectedCandidateId && (
+          <div className="mt-4">
+            <button 
+              onClick={closeMap}
+              className="text-white mb-2 text-right w-full"
+            >
+              Fechar Mapa
+            </button>
+            <Map idCandidate={selectedCandidateId} />
+          </div>
+        )}
       </div>
-
     </div>
   );
 }
