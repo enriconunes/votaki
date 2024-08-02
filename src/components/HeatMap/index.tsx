@@ -45,20 +45,31 @@ interface ApiResponse {
     status: number;
 }
 
+// Função para formatar a data
+const formatDate = (dateString: string): string => {
+    const date = new Date(dateString);
+    return date.toLocaleString('pt-BR', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+    });
+};
+
 // Componente para configurar o mapa com base nas geolocalizações
 const MapSetup = ({ geolocations }: { geolocations: Geolocation[] }) => {
     const map = useMap();
 
     useEffect(() => {
         if (map) {
-            // Se houver geolocalizações, define o centro com base na primeira
-            if (geolocations.length > 0) {
-                const { latitude, longitude } = geolocations[0];
-                map.setView([latitude, longitude], 14);
-            } else {
-                // Caso contrário, define o centro para as coordenadas do Brasil
-                map.setView([-14.235004, -51.92528], 4);
-            }
+            // Remove todos os marcadores existentes
+            map.eachLayer(layer => {
+                if (layer instanceof L.Marker) {
+                    map.removeLayer(layer);
+                }
+            });
 
             // Define um ícone de marcador personalizado
             const markerIcon = L.icon({
@@ -72,9 +83,12 @@ const MapSetup = ({ geolocations }: { geolocations: Geolocation[] }) => {
             geolocations.forEach(location => {
                 L.marker([location.latitude, location.longitude], { icon: markerIcon })
                     .addTo(map)
-                    .bindPopup('Localização de um voto.')
+                    .bindPopup(`Registro em ${formatDate(location.createdAt)}`)
                     .openPopup();
             });
+
+            // define o centro para as coordenadas do Brasil
+            map.setView([-14.235004, -51.92528], 4);
         }
     }, [map, geolocations]);
 
@@ -103,8 +117,7 @@ const TestMap = ({ idCandidate }: { idCandidate: string }) => {
                     .map(vote => vote.Geolocation)
                     .filter((geo): geo is Geolocation => geo !== null);
 
-                // Define as geolocalizações ou uma lista vazia se não houver geolocalizações válidas
-                setGeolocations(validGeolocations.length > 0 ? validGeolocations : []);
+                setGeolocations(validGeolocations);
             } catch (error) {
                 console.error('Erro ao buscar geolocalizações:', error);
             }

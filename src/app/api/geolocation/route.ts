@@ -28,7 +28,7 @@ export async function GET(req: NextRequest) {
         });
 
         if (!candidate) {
-            return NextResponse.json({ message: "Nenhum candidato encontrado para esta cidade.", status: 404 });
+            return NextResponse.json({ message: "Nenhum candidato encontrado com esse identificador.", status: 404 });
         }
 
         return NextResponse.json({ candidate, status: 200 });
