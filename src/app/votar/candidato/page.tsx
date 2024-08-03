@@ -24,10 +24,6 @@ export default function Votar() {
 
     return (
         <div className="flex flex-col justify-center items-center min-h-screen relative">
-            <LogoutBtn />
-            <ReturnBtn endpoint={'/votar/cidade'} />
-            <img src={"/LogoWhite.png"} alt="Logo Votaki" className="sm:w-2/6 w-2/3 mt-16 md:mt-10" />
-
             <Suspense fallback={<LoadComponent />}>
                 <VotarContent />
             </Suspense>

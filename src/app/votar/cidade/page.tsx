@@ -94,12 +94,12 @@ export default function Votar() {
         <div className="p-8 bg-white border-2 border-gray-200 rounded-lg shadow-2xl">
           <div className="flex flex-col items-center">
 
-            <p className="text-center text-base font-bold text-gray-400 mb-4">
+            <p className="text-center text-sm md:text-base font-bold text-gray-400 mb-4">
               Selecione a cidade da votação.
             </p>
             <SelectCity handleSelectCity={handleSelectCity} />
 
-            <p className="text-center text-base font-bold text-gray-400 my-4">
+            <p className="text-center text-sm md:text-base font-bold text-gray-400 my-4">
               Selecione o cargo do(a) candidato(a).
             </p>
             <SelectPosition handleSelectPosition={handleSelectPosition} />
