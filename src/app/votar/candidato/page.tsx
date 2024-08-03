@@ -17,6 +17,24 @@ import CandidateFilterNumber from "@/components/Forms/CandidadeFilterNumber";
 import { useLocation } from "@/context/LocationContext";
 import { useSearchParams } from "next/navigation";
 
+import { Suspense } from 'react';
+
+export default function Votar() {
+    // Outros códigos e importações
+
+    return (
+        <div className="flex flex-col justify-center items-center min-h-screen relative">
+            <LogoutBtn />
+            <ReturnBtn endpoint={'/votar/cidade'} />
+            <img src={"/LogoWhite.png"} alt="Logo Votaki" className="sm:w-2/6 w-2/3 mt-16 md:mt-10" />
+
+            <Suspense fallback={<LoadComponent />}>
+                <VotarContent />
+            </Suspense>
+        </div>
+    );
+}
+
 type Party = {
     idParty: string;
     name: string;
@@ -47,7 +65,7 @@ type CandidateProps = {
     Position: Position
 };
 
-export default function Votar() {
+function VotarContent() {
     const { data: session, status } = useSession();
     const router = useRouter();
     // const { idCity } = useParams();
@@ -117,16 +135,6 @@ export default function Votar() {
             setIsLoading(false);
         }
     }
-
-    // Log das coordenadas do contexto
-    // useEffect(() => {
-    //     if (coordinates) {
-    //         console.log('Latitude:', coordinates.latitude);
-    //         console.log('Longitude:', coordinates.longitude);
-    //     } else {
-    //         console.log("Sem localização");
-    //     }
-    // }, [coordinates]);
 
     // tela de carregamento inicial enquanto verifica credenciais de login
     if (status === 'loading') {
