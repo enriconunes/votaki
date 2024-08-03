@@ -41,7 +41,7 @@ export default function SelectCity({ handleSelectCity }: SelectCityProps) {
                 value={selectedCity}
                 onChange={handleChange}
             >
-                <option value="" disabled hidden>Selecione a cidade</option>
+                <option value="" disabled hidden>Selecionar cidade</option>
                 {cities.map((city) => (
                     <option key={city.idCity} value={city.idCity}>{city.name}</option>
                 ))}

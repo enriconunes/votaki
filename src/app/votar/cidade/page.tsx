@@ -9,12 +9,14 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { IoIosLock } from "react-icons/io";
 import { useLocation } from "@/context/LocationContext";
+import SelectPosition from "@/components/Forms/SelectPosition";
 
 export default function Votar() {
   const { data: session, status } = useSession();
   const router = useRouter();
   const { coordinates, setCoordinates, locationError } = useLocation(); // Incluído locationError do contexto
   const [selectedCity, setSelectedCity] = useState<string>('');
+  const [selectedPosition, setSelectedPosition] = useState<string>('');
 
   useEffect(() => {
     if (status === 'unauthenticated') {
@@ -50,16 +52,24 @@ export default function Votar() {
     return <LoadScreen />;
   }
 
-  function handleRedirect(idCity: string) {
+  function handleRedirect(idCity: string, idPosition: string) {
     if (idCity === '') {
-      toast.warning("Selecione uma cidade para avançar.");
+      toast.warning("Selecione a sua cidade de votação para avançar.");
       return;
     }
-    router.push(`/votar/candidato/${idCity}`);
+    if (idPosition === '') {
+      toast.warning("Selecione o cargo do(a) candidato(a) que você deseja votar para avançar.");
+      return;
+    }
+    router.push(`/votar/candidato?idCity=${idCity}&idPosition=${idPosition}`);
   }
 
   function handleSelectCity(idCity: string) {
     setSelectedCity(idCity);
+  }
+
+  function handleSelectPosition(idPosition: string) {
+    setSelectedPosition(idPosition);
   }
 
   return (
@@ -83,11 +93,17 @@ export default function Votar() {
       <div className="p-4 w-full sm:max-w-md">
         <div className="p-8 bg-white border-2 border-gray-200 rounded-lg shadow-2xl">
           <div className="flex flex-col items-center">
-            <p className="text-center text-base font-bold text-gray-400 mb-4">
-              Selecione a cidade da votação para visualizar os candidatos.
-            </p>
 
+            <p className="text-center text-base font-bold text-gray-400 mb-4">
+              Selecione a cidade da votação.
+            </p>
             <SelectCity handleSelectCity={handleSelectCity} />
+
+            <p className="text-center text-base font-bold text-gray-400 my-4">
+              Selecione o cargo do(a) candidato(a).
+            </p>
+            <SelectPosition handleSelectPosition={handleSelectPosition} />
+
           </div>
         </div>
       </div>
@@ -95,7 +111,7 @@ export default function Votar() {
       <div>
         <p
           className="font-medium text-white mt-2 hover:brightness-125 hover:cursor-pointer text-lg border-b"
-          onClick={() => handleRedirect(selectedCity)}
+          onClick={() => handleRedirect(selectedCity, selectedPosition)}
         >
           Avançar
         </p>

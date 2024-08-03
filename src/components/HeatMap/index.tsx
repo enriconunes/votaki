@@ -83,7 +83,7 @@ const MapSetup = ({ geolocations }: { geolocations: Geolocation[] }) => {
             geolocations.forEach(location => {
                 L.marker([location.latitude, location.longitude], { icon: markerIcon })
                     .addTo(map)
-                    .bindPopup(`Registro em ${formatDate(location.createdAt)}`)
+                    .bindPopup(`Registrado em ${formatDate(location.createdAt)}`)
                     .openPopup();
             });
 

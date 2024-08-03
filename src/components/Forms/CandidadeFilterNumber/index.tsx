@@ -4,9 +4,10 @@ import { toast } from 'react-toastify';
 interface FilterProps {
     candidateNumber: string;
     handleSetCandidateNumber: (number: string) => void;
+    getData: () => void;
 }
 
-export default function CandidateFilterNumber({ candidateNumber, handleSetCandidateNumber }: FilterProps) {
+export default function CandidateFilterNumber({ candidateNumber, handleSetCandidateNumber, getData }: FilterProps) {
 
     const [isKeyboardVisible, setKeyboardVisible] = useState(false);
 
@@ -19,8 +20,18 @@ export default function CandidateFilterNumber({ candidateNumber, handleSetCandid
     };
 
     const handleConfirm = () => {
+        if(!candidateNumber){
+            toast.warning("Digite um número para pesquisar pelo candidato.")
+            return
+        }
         setKeyboardVisible(false);
+        getData()
     };
+
+    const handleClear = () => {
+        handleSetCandidateNumber('');
+    };
+
 
     const handleCancel = () => {
         handleSetCandidateNumber('');
@@ -32,7 +43,7 @@ export default function CandidateFilterNumber({ candidateNumber, handleSetCandid
     };
 
     return (
-        <div className="w-full flex flex-col">
+        <div className="w-full flex flex-col mt-3">
             <div
                 onClick={handleInputFocus}
                 className="border-2 border-teal-900 bg-gray-900 py-1 px-2 rounded-md text-gray-200 cursor-pointer"
@@ -66,7 +77,7 @@ export default function CandidateFilterNumber({ candidateNumber, handleSetCandid
                     <div className="grid grid-cols-3 gap-2 mt-3">
                         <button
                             type="button"
-                            onClick={() => handleSetCandidateNumber('')}
+                            onClick={handleClear}
                             className="bg-gray-300 text-black py-2 rounded"
                         >
                             LIMPAR
